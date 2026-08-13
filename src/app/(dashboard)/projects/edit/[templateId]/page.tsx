@@ -6,7 +6,7 @@ import {
     Plus, Trash2, Calendar, User, Clock, Loader2,
     ArrowLeft, GripVertical, Users, Pencil, X, Check,
     ChevronUp, ChevronDown, Link2, FileText, Video,
-    Image, FolderOpen, ExternalLink, AlertCircle
+    Image, FolderOpen, ExternalLink, Crown
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ALL_WORKFLOWS } from '@/lib/constants/workflows';
@@ -65,7 +65,10 @@ export default function EditWorkflowPage() {
     const [steps, setSteps] = useState<Step[]>([]);
     const [editingStepId, setEditingStepId] = useState<string | null>(null);
 
-    // ✅ New: Attachments State
+    // ✅ NEW: Project Owner State
+    const [projectOwner, setProjectOwner] = useState<string>('');
+
+    // Attachments State
     const [attachments, setAttachments] = useState<Attachment[]>([]);
     const [newAttachment, setNewAttachment] = useState<{ name: string; url: string; type: string }>({
         name: '',
@@ -95,7 +98,7 @@ export default function EditWorkflowPage() {
                 today.setDate(today.getDate() + 1);
                 setStartDate(today.toISOString().split('T')[0]);
 
-                // ✅ Add some mock attachments for demo
+                // Mock attachments for demo
                 setAttachments([
                     { id: '1', name: 'Project Brief.docx', url: 'https://drive.google.com/file/d/123', type: 'google-drive', icon: FolderOpen },
                     { id: '2', name: 'Reference Video.mp4', url: 'https://youtube.com/watch?v=abc', type: 'youtube', icon: Video },
@@ -194,7 +197,7 @@ export default function EditWorkflowPage() {
         setSteps(newSteps);
     };
 
-    // ✅ Attachment Functions
+    // Attachment Functions
     const addAttachment = () => {
         if (!newAttachment.name.trim()) {
             toast.error('Please enter a file name.');
@@ -249,6 +252,7 @@ export default function EditWorkflowPage() {
             const projectData = {
                 name: projectName,
                 startDate,
+                projectOwner, // ✅ NEW: Project Owner
                 steps: steps.map(s => ({
                     name: s.name,
                     role: s.role,
@@ -285,7 +289,6 @@ export default function EditWorkflowPage() {
         return assigneeIds.map(id => TEAM_MEMBERS.find(m => m.id === id));
     };
 
-    // ✅ Get attachment type info
     const getAttachmentType = (type: string) => {
         return ATTACHMENT_TYPES.find(t => t.value === type);
     };
@@ -339,6 +342,48 @@ export default function EditWorkflowPage() {
                                 className="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition outline-none"
                                 required
                             />
+                        </div>
+                    </div>
+
+                    {/* ✅ NEW: Project Owner - Full Width Below */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                <Crown className="h-4 w-4 text-indigo-500" />
+                                Project Owner / Head
+                            </label>
+                            <select
+                                value={projectOwner}
+                                onChange={(e) => setProjectOwner(e.target.value)}
+                                className="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition outline-none"
+                            >
+                                <option value="">Select Project Owner</option>
+                                {TEAM_MEMBERS.map((member) => (
+                                    <option key={member.id} value={member.id}>
+                                        {member.name} ({member.role})
+                                    </option>
+                                ))}
+                            </select>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                👑 Project owner gets all notifications and can manage everything.
+                            </p>
+                        </div>
+                        <div className="flex items-end">
+                            {projectOwner && (
+                                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 bg-indigo-50 dark:bg-indigo-950/30 px-3 py-2 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                                    <span className="text-lg">👤</span>
+                                    <span>Owner: <strong className="text-indigo-600 dark:text-indigo-400">
+                                        {TEAM_MEMBERS.find(m => m.id === projectOwner)?.name}
+                                    </strong></span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setProjectOwner('')}
+                                        className="text-gray-400 hover:text-red-500 transition"
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -499,7 +544,7 @@ export default function EditWorkflowPage() {
                         </button>
                     </div>
 
-                    {/* ✅ NEW: Attachments Section */}
+                    {/* Attachments Section */}
                     <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
                         <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2 mb-3">
                             <Link2 className="h-4 w-4 text-indigo-500" />
@@ -509,7 +554,6 @@ export default function EditWorkflowPage() {
                             Add links from Google Drive, Dropbox, Figma, YouTube, Loom, or any other URL.
                         </p>
 
-                        {/* Attachment List */}
                         <div className="flex flex-wrap gap-2 mb-3">
                             {attachments.map((attachment) => {
                                 const typeInfo = getAttachmentType(attachment.type);
@@ -542,7 +586,6 @@ export default function EditWorkflowPage() {
                             })}
                         </div>
 
-                        {/* Add Attachment */}
                         {showAddAttachment ? (
                             <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700 space-y-3">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -623,6 +666,13 @@ export default function EditWorkflowPage() {
                                 {startDate && (
                                     <span className="text-gray-600 dark:text-gray-400">
                                         📅 Start: <strong className="text-gray-900 dark:text-white">{startDate}</strong>
+                                    </span>
+                                )}
+                                {projectOwner && (
+                                    <span className="text-gray-600 dark:text-gray-400">
+                                        👑 Owner: <strong className="text-indigo-600 dark:text-indigo-400">
+                                            {TEAM_MEMBERS.find(m => m.id === projectOwner)?.name}
+                                        </strong>
                                     </span>
                                 )}
                                 {steps.some(s => s.assignees.length > 0) && (

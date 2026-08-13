@@ -1,9 +1,10 @@
+// src/app/(auth)/signup/page.tsx
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, User, Loader2, Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
+import { Mail, Lock, User, Building2, Loader2, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 
@@ -15,25 +16,23 @@ export default function SignupPage() {
         name: '',
         email: '',
         password: '',
-        confirmPassword: '',
+        orgName: '',
     });
     const [errors, setErrors] = useState<{
         name?: string;
         email?: string;
         password?: string;
-        confirmPassword?: string;
+        orgName?: string;
     }>({});
 
     const validate = () => {
-        const newErrors: typeof errors = {};
+        const newErrors: any = {};
         if (!formData.name) newErrors.name = 'Name is required';
         if (!formData.email) newErrors.email = 'Email is required';
         else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
         if (!formData.password) newErrors.password = 'Password is required';
         else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
-        if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match';
-        }
+        if (!formData.orgName) newErrors.orgName = 'Organization name is required';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -46,15 +45,20 @@ export default function SignupPage() {
         try {
             await new Promise((resolve) => setTimeout(resolve, 1500));
 
-            // ✅ ✅ ✅ COOKIE SET KARO ✅ ✅ ✅
+            const user = {
+                id: '1',
+                name: formData.name,
+                email: formData.email,
+                role: 'owner',
+                organization: formData.orgName
+            };
+
             const expires = new Date();
-            expires.setTime(expires.getTime() + 24 * 60 * 60 * 1000); // 1 din
+            expires.setTime(expires.getTime() + 24 * 60 * 60 * 1000);
             document.cookie = `auth-token=mock-token; expires=${expires.toUTCString()}; path=/;`;
+            localStorage.setItem('user', JSON.stringify(user));
 
-            // Debug - check if cookie is set
-            console.log('Signup - Cookie set:', document.cookie);
-
-            toast.success('Account created! 🎉');
+            toast.success(`Welcome ${formData.name}! Organization "${formData.orgName}" created! 🎉`);
             router.push('/');
         } catch (error) {
             toast.error('Something went wrong. Please try again.');
@@ -71,27 +75,18 @@ export default function SignupPage() {
                 transition={{ duration: 0.5 }}
                 className="w-full max-w-md space-y-8 rounded-2xl glass p-8 border border-white/20 dark:border-gray-800/50 shadow-2xl"
             >
-                {/* Logo */}
                 <div className="text-center">
                     <div className="mx-auto h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
                         <span className="text-2xl font-bold text-white">FP</span>
                     </div>
-                    <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                        Create account
-                    </h2>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                        Start your workflow journey
-                    </p>
+                    <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">Create account</h2>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Start your workflow journey</p>
                 </div>
 
-                {/* Form */}
                 <form className="mt-8 space-y-6" onSubmit={handleSignup}>
                     <div className="space-y-4">
-                        {/* Name */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Full Name
-                            </label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
                             <div className="mt-1 relative">
                                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                                 <input
@@ -105,11 +100,8 @@ export default function SignupPage() {
                             </div>
                         </div>
 
-                        {/* Email */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Email
-                            </label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
                             <div className="mt-1 relative">
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                                 <input
@@ -123,11 +115,8 @@ export default function SignupPage() {
                             </div>
                         </div>
 
-                        {/* Password */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Password
-                            </label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
                             <div className="mt-1 relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                                 <input
@@ -148,23 +137,18 @@ export default function SignupPage() {
                             </div>
                         </div>
 
-                        {/* Confirm Password */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Confirm Password
-                            </label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Organization Name</label>
                             <div className="mt-1 relative">
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                                 <input
-                                    type={showPassword ? 'text' : 'password'}
-                                    value={formData.confirmPassword}
-                                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                                    className={`w-full rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'} bg-white dark:bg-gray-900 pl-10 p-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition outline-none`}
-                                    placeholder="••••••••"
+                                    type="text"
+                                    value={formData.orgName}
+                                    onChange={(e) => setFormData({ ...formData, orgName: e.target.value })}
+                                    className={`w-full rounded-lg border ${errors.orgName ? 'border-red-500' : 'border-gray-200 dark:border-gray-700'} bg-white dark:bg-gray-900 pl-10 p-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition outline-none`}
+                                    placeholder="Your Company Name"
                                 />
-                                {errors.confirmPassword && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.confirmPassword}</p>
-                                )}
+                                {errors.orgName && <p className="mt-1 text-xs text-red-500">{errors.orgName}</p>}
                             </div>
                         </div>
                     </div>
@@ -172,7 +156,7 @@ export default function SignupPage() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="group relative flex w-full justify-center rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="group relative flex w-full justify-center rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-70"
                     >
                         {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Create Account'}
                     </button>
