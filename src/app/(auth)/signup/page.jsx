@@ -6,14 +6,16 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
     Mail, Lock, User, Building2, Loader2, Eye, EyeOff,
-    Sparkles, Calendar, CheckCircle, AlertCircle
+    Sparkles, Calendar, CheckCircle, AlertCircle, Moon, Sun
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useRegisterMutation } from '@/store/api/authApi';
+import { useTheme } from '@/providers/ThemeProvider';
 import toast from 'react-hot-toast';
 
 export default function SignupPage() {
     const router = useRouter();
+    const { theme, toggleTheme } = useTheme();
     const [register, { isLoading }] = useRegisterMutation();
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
@@ -26,9 +28,6 @@ export default function SignupPage() {
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
 
-    // ============================================
-    // VALIDATION
-    // ============================================
     const validateField = (field, value) => {
         switch (field) {
             case 'name':
@@ -85,9 +84,6 @@ export default function SignupPage() {
         }
     };
 
-    // ============================================
-    // RESET FORM
-    // ============================================
     const resetForm = () => {
         setFormData({
             name: '',
@@ -101,9 +97,6 @@ export default function SignupPage() {
         setShowPassword(false);
     };
 
-    // ============================================
-    // SUBMIT
-    // ============================================
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
@@ -112,7 +105,6 @@ export default function SignupPage() {
             const result = await register(formData).unwrap();
 
             if (result.success) {
-                // ✅ Success toast
                 toast.success('Account created successfully! 🎉', {
                     icon: '✅',
                     duration: 4000,
@@ -123,13 +115,9 @@ export default function SignupPage() {
                     duration: 5000,
                 });
 
-                // ✅ Store email for resend verification
                 localStorage.setItem('registerEmail', formData.email);
-
-                // ✅ Form reset karo
                 resetForm();
 
-                // ✅ 2 sec baad login par bhejo
                 setTimeout(() => {
                     router.push('/login');
                 }, 2000);
@@ -143,17 +131,29 @@ export default function SignupPage() {
         }
     };
 
-    // ============================================
-    // RENDER
-    // ============================================
     return (
         <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 p-4">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="w-full max-w-md rounded-2xl glass p-8 border border-white/20 dark:border-gray-800/50 shadow-2xl"
+                className="w-full max-w-md rounded-2xl glass p-8 border border-white/20 dark:border-gray-800/50 shadow-2xl relative"
             >
+                {/* Dark Mode Toggle - Top Right */}
+                <div className="absolute top-4 right-4">
+                    <button
+                        onClick={toggleTheme}
+                        className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+                        aria-label="Toggle theme"
+                    >
+                        {theme === 'dark' ? (
+                            <Sun className="h-5 w-5 text-yellow-400" />
+                        ) : (
+                            <Moon className="h-5 w-5 text-gray-600" />
+                        )}
+                    </button>
+                </div>
+
                 {/* HEADER */}
                 <div className="text-center">
                     <div className="mx-auto h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
@@ -182,8 +182,8 @@ export default function SignupPage() {
                                 onChange={(e) => handleChange('name', e.target.value)}
                                 onBlur={() => handleBlur('name')}
                                 className={`w-full rounded-lg border ${errors.name && touched.name
-                                        ? 'border-red-500'
-                                        : 'border-gray-200 dark:border-gray-700'
+                                    ? 'border-red-500'
+                                    : 'border-gray-200 dark:border-gray-700'
                                     } bg-white dark:bg-gray-900 pl-10 p-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition outline-none`}
                                 placeholder="Amit Sharma"
                             />
@@ -209,8 +209,8 @@ export default function SignupPage() {
                                 onChange={(e) => handleChange('email', e.target.value)}
                                 onBlur={() => handleBlur('email')}
                                 className={`w-full rounded-lg border ${errors.email && touched.email
-                                        ? 'border-red-500'
-                                        : 'border-gray-200 dark:border-gray-700'
+                                    ? 'border-red-500'
+                                    : 'border-gray-200 dark:border-gray-700'
                                     } bg-white dark:bg-gray-900 pl-10 p-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition outline-none`}
                                 placeholder="you@company.com"
                             />
@@ -236,8 +236,8 @@ export default function SignupPage() {
                                 onChange={(e) => handleChange('password', e.target.value)}
                                 onBlur={() => handleBlur('password')}
                                 className={`w-full rounded-lg border ${errors.password && touched.password
-                                        ? 'border-red-500'
-                                        : 'border-gray-200 dark:border-gray-700'
+                                    ? 'border-red-500'
+                                    : 'border-gray-200 dark:border-gray-700'
                                     } bg-white dark:bg-gray-900 pl-10 pr-10 p-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition outline-none`}
                                 placeholder="••••••••"
                             />
@@ -270,8 +270,8 @@ export default function SignupPage() {
                                 onChange={(e) => handleChange('dob', e.target.value)}
                                 onBlur={() => handleBlur('dob')}
                                 className={`w-full rounded-lg border ${errors.dob && touched.dob
-                                        ? 'border-red-500'
-                                        : 'border-gray-200 dark:border-gray-700'
+                                    ? 'border-red-500'
+                                    : 'border-gray-200 dark:border-gray-700'
                                     } bg-white dark:bg-gray-900 pl-10 p-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition outline-none`}
                             />
                             {errors.dob && touched.dob && (
@@ -296,8 +296,8 @@ export default function SignupPage() {
                                 onChange={(e) => handleChange('orgName', e.target.value)}
                                 onBlur={() => handleBlur('orgName')}
                                 className={`w-full rounded-lg border ${errors.orgName && touched.orgName
-                                        ? 'border-red-500'
-                                        : 'border-gray-200 dark:border-gray-700'
+                                    ? 'border-red-500'
+                                    : 'border-gray-200 dark:border-gray-700'
                                     } bg-white dark:bg-gray-900 pl-10 p-2.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition outline-none`}
                                 placeholder="Your Company Name"
                             />

@@ -4,13 +4,15 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Mail, Lock, Loader2, Eye, EyeOff, Sparkles, AlertCircle } from 'lucide-react';
+import { Mail, Lock, Loader2, Eye, EyeOff, Sparkles, AlertCircle, Moon, Sun } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLoginMutation, useResendVerificationMutation } from '@/store/api/authApi';
+import { useTheme } from '@/providers/ThemeProvider';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
     const router = useRouter();
+    const { theme, toggleTheme } = useTheme();
     const [login, { isLoading }] = useLoginMutation();
     const [resend, { isLoading: isResending }] = useResendVerificationMutation();
     const [showPassword, setShowPassword] = useState(false);
@@ -43,12 +45,11 @@ export default function LoginPage() {
                     icon: '👋',
                     duration: 3000,
                 });
-                router.push('/');
+                router.push('/dashboard');
             }
         } catch (error) {
             const message = error?.data?.message || 'Invalid credentials. Please try again.';
 
-            // ✅ Agar error "Email not verified" hai toh resend option show karo
             if (error?.data?.error === 'EMAIL_NOT_VERIFIED' || message.includes('verify')) {
                 setShowResend(true);
                 setResendEmail(formData.email);
@@ -97,6 +98,21 @@ export default function LoginPage() {
                 transition={{ duration: 0.5 }}
                 className="w-full max-w-md rounded-2xl glass p-8 border border-white/20 dark:border-gray-800/50 shadow-2xl"
             >
+                {/* Dark Mode Toggle - Top Right */}
+                <div className="absolute top-4 right-4">
+                    <button
+                        onClick={toggleTheme}
+                        className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+                        aria-label="Toggle theme"
+                    >
+                        {theme === 'dark' ? (
+                            <Sun className="h-5 w-5 text-yellow-400" />
+                        ) : (
+                            <Moon className="h-5 w-5 text-gray-600" />
+                        )}
+                    </button>
+                </div>
+
                 {/* Logo */}
                 <div className="text-center">
                     <div className="mx-auto h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
@@ -169,7 +185,7 @@ export default function LoginPage() {
                         </div>
                     </div>
 
-                    {/* Resend Verification (if email not verified) */}
+                    {/* Resend Verification */}
                     {showResend && (
                         <div className="p-3 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-lg">
                             <p className="text-sm text-yellow-700 dark:text-yellow-300 flex items-center gap-2">
