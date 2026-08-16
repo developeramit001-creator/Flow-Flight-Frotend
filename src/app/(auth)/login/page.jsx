@@ -45,6 +45,7 @@ export default function LoginPage() {
                     icon: '👋',
                     duration: 3000,
                 });
+                console.log('Redirecting to dashboard...');
                 router.push('/dashboard');
             }
         } catch (error) {

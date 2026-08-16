@@ -1,11 +1,7 @@
 // src/store/api/authApi.js
 import baseApi from './baseApi';
+import { setUser, clearUser } from '../slices/authSlice'; // ✅ IMPORT KARO
 
-/**
- * Auth API - Authentication endpoints
- * - Register, Login, Logout, Verify, Refresh
- * - Tokens cookie mein store honge (HttpOnly)
- */
 export const authApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // ============================================
@@ -17,13 +13,12 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'POST',
                 body: userData,
             }),
-            // ✅ Success par Redux store update karo
             onQueryStarted: async (arg, { queryFulfilled, dispatch }) => {
                 try {
                     const { data } = await queryFulfilled;
                     if (data.success) {
                         const { user, organization } = data.data;
-                        // ✅ User data Redux store mein save karo
+                        // ✅ setUser use karo
                         dispatch(setUser({ user, organization }));
                     }
                 } catch (error) {
@@ -48,11 +43,8 @@ export const authApi = baseApi.injectEndpoints({
                     if (data.success) {
                         const { user, organizations } = data.data;
                         const organization = organizations?.[0] || null;
-                        // ✅ User data Redux store mein save karo
-                        dispatch(setUser({
-                            user,
-                            organization
-                        }));
+                        // ✅ setUser use karo
+                        dispatch(setUser({ user, organization }));
                     }
                 } catch (error) {
                     console.error('Login error:', error);
@@ -69,9 +61,8 @@ export const authApi = baseApi.injectEndpoints({
                 url: '/auth/logout',
                 method: 'POST',
             }),
-            // ✅ Success par Redux store clear karo
             onQueryStarted: async (arg, { dispatch }) => {
-                // ✅ Redux store clear karo
+                // ✅ clearUser use karo
                 dispatch(clearUser());
             },
             invalidatesTags: ['Auth'],
@@ -83,12 +74,12 @@ export const authApi = baseApi.injectEndpoints({
         getCurrentUser: builder.query({
             query: () => '/auth/me',
             providesTags: ['User'],
-            // ✅ Success par Redux store update karo
             onQueryStarted: async (arg, { queryFulfilled, dispatch }) => {
                 try {
                     const { data } = await queryFulfilled;
                     if (data.success) {
                         const { user } = data.data;
+                        // ✅ setUser use karo
                         dispatch(setUser({ user }));
                     }
                 } catch (error) {
@@ -112,7 +103,7 @@ export const authApi = baseApi.injectEndpoints({
             query: (email) => ({
                 url: '/auth/resend-verification',
                 method: 'POST',
-                body: email,
+                body: { email },
             }),
         }),
 
@@ -138,5 +129,3 @@ export const {
     useResendVerificationMutation,
     useRefreshTokenMutation,
 } = authApi;
-
-
