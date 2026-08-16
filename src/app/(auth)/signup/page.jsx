@@ -86,6 +86,22 @@ export default function SignupPage() {
     };
 
     // ============================================
+    // RESET FORM
+    // ============================================
+    const resetForm = () => {
+        setFormData({
+            name: '',
+            email: '',
+            password: '',
+            dob: '',
+            orgName: '',
+        });
+        setErrors({});
+        setTouched({});
+        setShowPassword(false);
+    };
+
+    // ============================================
     // SUBMIT
     // ============================================
     const handleSubmit = async (e) => {
@@ -94,16 +110,29 @@ export default function SignupPage() {
 
         try {
             const result = await register(formData).unwrap();
+
             if (result.success) {
+                // ✅ Success toast
                 toast.success('Account created successfully! 🎉', {
                     icon: '✅',
                     duration: 4000,
                 });
+
                 toast.info('Please check your email to verify your account.', {
                     icon: '📧',
                     duration: 5000,
                 });
-                router.push('/verify-pending');
+
+                // ✅ Store email for resend verification
+                localStorage.setItem('registerEmail', formData.email);
+
+                // ✅ Form reset karo
+                resetForm();
+
+                // ✅ 2 sec baad login par bhejo
+                setTimeout(() => {
+                    router.push('/login');
+                }, 2000);
             }
         } catch (error) {
             const message = error?.data?.message || 'Registration failed. Please try again.';
@@ -125,9 +154,7 @@ export default function SignupPage() {
                 transition={{ duration: 0.5 }}
                 className="w-full max-w-md rounded-2xl glass p-8 border border-white/20 dark:border-gray-800/50 shadow-2xl"
             >
-                {/* ============================================
-                HEADER
-                ============================================ */}
+                {/* HEADER */}
                 <div className="text-center">
                     <div className="mx-auto h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
                         <Sparkles className="h-7 w-7 text-white" />
@@ -140,9 +167,7 @@ export default function SignupPage() {
                     </p>
                 </div>
 
-                {/* ============================================
-                FORM
-                ============================================ */}
+                {/* FORM */}
                 <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
                     {/* Full Name */}
                     <div>

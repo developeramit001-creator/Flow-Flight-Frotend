@@ -7,17 +7,26 @@ import { ToastProvider } from '@/providers/ToastProvider';
 import { Toaster } from 'react-hot-toast';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+// ✅ Inter Font - Professional SaaS font
+const inter = Inter({
+    subsets: ['latin'],
+    display: 'swap',
+    variable: '--font-inter',  // ✅ CSS variable for Tailwind
+    weight: ['400', '500', '600', '700', '800'], // ✅ Multiple weights
+});
 
 export const metadata = {
     title: 'FlowPilot - Workflow Engine',
     description: 'Your Workflow, Our Engine.',
+    icons: {
+        icon: '/favicon.ico',
+    },
 };
 
 export default function RootLayout({ children }) {
     return (
-        <html lang="en" suppressHydrationWarning>
-            <body className={inter.className}>
+        <html lang="en" suppressHydrationWarning className={inter.variable}>
+            <body className="font-sans antialiased">
                 <StoreProvider>
                     <AuthHydrator>
                         <ThemeProvider>

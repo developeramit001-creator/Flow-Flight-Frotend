@@ -4,20 +4,23 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Mail, Lock, Loader2, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { Mail, Lock, Loader2, Eye, EyeOff, Sparkles, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useLoginMutation } from '@/store/api/authApi';
+import { useLoginMutation, useResendVerificationMutation } from '@/store/api/authApi';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
     const router = useRouter();
     const [login, { isLoading }] = useLoginMutation();
+    const [resend, { isLoading: isResending }] = useResendVerificationMutation();
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
     const [errors, setErrors] = useState({});
+    const [showResend, setShowResend] = useState(false);
+    const [resendEmail, setResendEmail] = useState('');
 
     const validate = () => {
         const newErrors = {};
@@ -44,6 +47,41 @@ export default function LoginPage() {
             }
         } catch (error) {
             const message = error?.data?.message || 'Invalid credentials. Please try again.';
+
+            // ✅ Agar error "Email not verified" hai toh resend option show karo
+            if (error?.data?.error === 'EMAIL_NOT_VERIFIED' || message.includes('verify')) {
+                setShowResend(true);
+                setResendEmail(formData.email);
+                toast.error('Please verify your email before logging in.', {
+                    icon: '📧',
+                    duration: 5000,
+                });
+            } else {
+                toast.error(message, {
+                    icon: '❌',
+                    duration: 4000,
+                });
+            }
+        }
+    };
+
+    const handleResendVerification = async () => {
+        if (!resendEmail) {
+            toast.error('No email found. Please try logging in again.');
+            return;
+        }
+
+        try {
+            const result = await resend({ email: resendEmail }).unwrap();
+            if (result.success) {
+                toast.success('Verification email sent again! 📧', {
+                    icon: '✅',
+                    duration: 3000,
+                });
+                setShowResend(false);
+            }
+        } catch (error) {
+            const message = error?.data?.message || 'Failed to resend verification email.';
             toast.error(message, {
                 icon: '❌',
                 duration: 4000,
@@ -91,7 +129,10 @@ export default function LoginPage() {
                                     placeholder="you@company.com"
                                 />
                                 {errors.email && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+                                    <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                                        <AlertCircle className="h-3 w-3" />
+                                        {errors.email}
+                                    </p>
                                 )}
                             </div>
                         </div>
@@ -119,11 +160,32 @@ export default function LoginPage() {
                                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                 </button>
                                 {errors.password && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.password}</p>
+                                    <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                                        <AlertCircle className="h-3 w-3" />
+                                        {errors.password}
+                                    </p>
                                 )}
                             </div>
                         </div>
                     </div>
+
+                    {/* Resend Verification (if email not verified) */}
+                    {showResend && (
+                        <div className="p-3 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                            <p className="text-sm text-yellow-700 dark:text-yellow-300 flex items-center gap-2">
+                                <AlertCircle className="h-4 w-4" />
+                                Your email is not verified. Please check your inbox.
+                            </p>
+                            <button
+                                type="button"
+                                onClick={handleResendVerification}
+                                disabled={isResending}
+                                className="mt-2 text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-medium disabled:opacity-50"
+                            >
+                                {isResending ? 'Sending...' : 'Resend verification email'}
+                            </button>
+                        </div>
+                    )}
 
                     {/* Submit Button */}
                     <button

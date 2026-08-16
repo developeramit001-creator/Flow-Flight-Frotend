@@ -112,7 +112,7 @@ export const authApi = baseApi.injectEndpoints({
             query: (email) => ({
                 url: '/auth/resend-verification',
                 method: 'POST',
-                body: { email },
+                body: email,
             }),
         }),
 
@@ -139,4 +139,4 @@ export const {
     useRefreshTokenMutation,
 } = authApi;
 
- 
+

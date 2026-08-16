@@ -1,6 +1,5 @@
-import type { Config } from 'tailwindcss';
-
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
     darkMode: 'class',
     content: [
         './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,6 +8,10 @@ const config: Config = {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'sans-serif'],
+                display: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+            },
             keyframes: {
                 'fade-in-up': {
                     '0%': { opacity: '0', transform: 'translateY(10px)' },
@@ -22,15 +25,14 @@ const config: Config = {
                 'slide-in': {
                     '0%': { transform: 'translateX(-100%)', opacity: '0' },
                     '100%': { transform: 'translateX(0)', opacity: '1' },
-                }
+                },
             },
             animation: {
                 'fade-in-up': 'fade-in-up 0.4s ease-out',
                 'pulse-ring': 'pulse-ring 2s ease-in-out infinite',
                 'slide-in': 'slide-in 0.3s ease-out',
-            }
+            },
         },
     },
     plugins: [],
 };
-export default config;
