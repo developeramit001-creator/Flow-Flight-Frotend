@@ -106,7 +106,7 @@ export default function EditWorkflowPage() {
                 ]);
             } else {
                 toast.error('Workflow template not found.');
-                router.push('/workflows');
+                router.push('/dashboard/workflows');
             }
         }
     }, [templateId, router]);
@@ -271,7 +271,7 @@ export default function EditWorkflowPage() {
             console.log('Project Data:', projectData);
 
             toast.success(`Project "${projectName}" created with ${steps.length} steps! 🎉`);
-            router.push('/');
+            router.push('/dashboard');
         } catch (error) {
             toast.error('Failed to create project. Please try again.');
         } finally {
@@ -302,7 +302,7 @@ export default function EditWorkflowPage() {
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl p-6 md:p-8">
                 {/* Back Button */}
                 <button
-                    onClick={() => router.push('/workflows')}
+                    onClick={() => router.push('/dashboard/workflows')}
                     className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition mb-4"
                 >
                     <ArrowLeft className="h-4 w-4" />
@@ -699,7 +699,7 @@ export default function EditWorkflowPage() {
                     <div className="border-t border-gray-200 dark:border-gray-700 pt-6 flex flex-wrap justify-end gap-3">
                         <button
                             type="button"
-                            onClick={() => router.push('/workflows')}
+                            onClick={() => router.push('/dashboard/workflows')}
                             className="px-6 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
                         >
                             Cancel

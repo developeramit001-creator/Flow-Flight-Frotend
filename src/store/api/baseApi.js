@@ -3,12 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
-/**
- * Base API - Sabhi APIs ka parent
- * - Cookies automatically send hongi (credentials: 'include')
- * - Error handling common
- * - Tag system for cache invalidation
- */
+// ✅ Cookie se token automatically send hoga (credentials: 'include')
 export const baseApi = createApi({
     reducerPath: 'baseApi',
     baseQuery: fetchBaseQuery({

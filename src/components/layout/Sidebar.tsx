@@ -23,14 +23,14 @@ function cn(...classes: (string | boolean | undefined)[]) {
 
 const navItems = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-    { name: 'Projects', href: '/projects', icon: FolderKanban },
-    { name: 'Workflows', href: '/workflows', icon: Workflow },
-    { name: 'Tasks', href: '/tasks', icon: CheckSquare },
-    { name: 'Team', href: '/team', icon: Users },
-    { name: 'Clients', href: '/clients', icon: Briefcase },
-    { name: 'Resources', href: '/resources', icon: Library },
-    { name: 'Chat', href: '/chat', icon: MessageCircle },
-    { name: 'Settings', href: '/settings', icon: Settings },
+    { name: 'Projects', href: '/dashboard/projects', icon: FolderKanban },
+    { name: 'Workflows', href: '/dashboard/workflows', icon: Workflow },
+    { name: 'Tasks', href: '/dashboard/tasks', icon: CheckSquare },
+    { name: 'Team', href: '/dashboard/team', icon: Users },
+    { name: 'Clients', href: '/dashboard/clients', icon: Briefcase },
+    { name: 'Resources', href: '/dashboard/resources', icon: Library },
+    { name: 'Chat', href: '/dashboard/chat', icon: MessageCircle },
+    { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];
 
 export function Sidebar() {

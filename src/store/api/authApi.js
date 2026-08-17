@@ -1,6 +1,6 @@
 // src/store/api/authApi.js
 import baseApi from './baseApi';
-import { setUser, clearUser } from '../slices/authSlice'; // ✅ IMPORT KARO
+import { setUser, clearUser } from '../slices/authSlice';
 
 export const authApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
@@ -18,7 +18,8 @@ export const authApi = baseApi.injectEndpoints({
                     const { data } = await queryFulfilled;
                     if (data.success) {
                         const { user, organization } = data.data;
-                        // ✅ setUser use karo
+                        // ✅ Cookie automatically set ho gayi (backend se)
+                        // ✅ Sirf user + org store karo Redux mein
                         dispatch(setUser({ user, organization }));
                     }
                 } catch (error) {
@@ -43,7 +44,8 @@ export const authApi = baseApi.injectEndpoints({
                     if (data.success) {
                         const { user, organizations } = data.data;
                         const organization = organizations?.[0] || null;
-                        // ✅ setUser use karo
+                        // ✅ Cookie automatically set ho gayi
+                        // ✅ Sirf user + org store karo
                         dispatch(setUser({ user, organization }));
                     }
                 } catch (error) {
@@ -62,14 +64,14 @@ export const authApi = baseApi.injectEndpoints({
                 method: 'POST',
             }),
             onQueryStarted: async (arg, { dispatch }) => {
-                // ✅ clearUser use karo
+                // ✅ Backend cookie clear karega
                 dispatch(clearUser());
             },
             invalidatesTags: ['Auth'],
         }),
 
         // ============================================
-        // 4. GET CURRENT USER
+        // 4. GET CURRENT USER (WITH ORGANIZATION)
         // ============================================
         getCurrentUser: builder.query({
             query: () => '/auth/me',
@@ -78,9 +80,9 @@ export const authApi = baseApi.injectEndpoints({
                 try {
                     const { data } = await queryFulfilled;
                     if (data.success) {
-                        const { user } = data.data;
-                        // ✅ setUser use karo
-                        dispatch(setUser({ user }));
+                        const { user, organization } = data.data; // ✅ organization bhi le lo
+                        // ✅ User + organization dono store karo (jaise login/register mein)
+                        dispatch(setUser({ user, organization }));
                     }
                 } catch (error) {
                     console.error('Get user error:', error);
@@ -108,18 +110,18 @@ export const authApi = baseApi.injectEndpoints({
         }),
 
         // ============================================
-        // 7. REFRESH TOKEN
+        // 7. REFRESH TOKEN (Cookie se auto)
         // ============================================
         refreshToken: builder.mutation({
             query: () => ({
                 url: '/auth/refresh-token',
                 method: 'POST',
+                // ✅ Cookie automatically send ho jayegi
             }),
         }),
     }),
 });
 
-// ✅ Auto-generated hooks
 export const {
     useRegisterMutation,
     useLoginMutation,

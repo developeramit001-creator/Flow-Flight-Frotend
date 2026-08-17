@@ -7,12 +7,11 @@ import { ToastProvider } from '@/providers/ToastProvider';
 import { Toaster } from 'react-hot-toast';
 import './globals.css';
 
-// ✅ Inter Font - Professional SaaS font
 const inter = Inter({
     subsets: ['latin'],
     display: 'swap',
-    variable: '--font-inter',  // ✅ CSS variable for Tailwind
-    weight: ['400', '500', '600', '700', '800'], // ✅ Multiple weights
+    variable: '--font-inter',
+    weight: ['400', '500', '600', '700', '800'],
 });
 
 export const metadata = {

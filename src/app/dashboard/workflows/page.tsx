@@ -28,25 +28,14 @@ export default function WorkflowsPage() {
         });
     }, [searchTerm, selectedCategory]);
 
-    // const handleSelectWorkflow = async (workflowId: string) => {
-    //     setIsCreating(true);
-    //     try {
-    //         await new Promise((resolve) => setTimeout(resolve, 1500));
-    //         toast.success('Project created successfully! 🎉');
-    //         router.push(`/tasks/${workflowId}`);
-    //     } catch (error) {
-    //         toast.error('Failed to create project. Please try again.');
-    //     } finally {
-    //         setIsCreating(false);
-    //     }
-    // };
+
 
     const handleSelectWorkflow = async (workflowId: string) => {
         setIsCreating(true);
         try {
             await new Promise((resolve) => setTimeout(resolve, 800));
             // ✅ Yahan change karo – Edit page par le jao
-            router.push(`/projects/edit/${workflowId}`);
+            router.push(`/dashboard/projects/edit/${workflowId}`);
         } catch (error) {
             toast.error('Failed to load workflow. Please try again.');
         } finally {
@@ -66,7 +55,7 @@ export default function WorkflowsPage() {
                     </p>
                 </div>
                 <button
-                    onClick={() => router.push('/projects/new')}
+                    onClick={() => router.push('/dashboard/projects/new')}
                     className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition shadow-lg shadow-indigo-500/30"
                 >
                     <Plus className="h-5 w-5" />

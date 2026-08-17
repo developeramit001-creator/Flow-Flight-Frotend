@@ -63,7 +63,7 @@ export default function NewProjectPage() {
         try {
             await new Promise((resolve) => setTimeout(resolve, 1500));
             toast.success(`Project "${projectName}" created with ${steps.length} steps! 🎉`);
-            router.push('/');
+            router.push('/dashboard');
         } catch (error) {
             toast.error('Failed to create project. Please try again.');
         } finally {
@@ -188,7 +188,7 @@ export default function NewProjectPage() {
                     <div className="border-t border-gray-200 dark:border-gray-700 pt-6 flex justify-end gap-3">
                         <button
                             type="button"
-                            onClick={() => router.push('/')}
+                            onClick={() => router.push('/dashboard')}
                             className="px-6 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
                         >
                             Cancel
