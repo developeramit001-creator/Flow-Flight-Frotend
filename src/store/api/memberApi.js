@@ -20,22 +20,11 @@ export const memberApi = baseApi.injectEndpoints({
                 method: 'POST',
                 body: { email, role },
             }),
-            invalidatesTags: ['Member'],
+            invalidatesTags: ['Member', 'Invite'],
         }),
 
         // ============================================
-        // 3. ACCEPT INVITE
-        // ============================================
-        acceptInvite: builder.mutation({
-            query: ({ token, userId }) => ({
-                url: `/accept-invite/${token}`,
-                method: 'POST',
-                body: { userId },
-            }),
-        }),
-
-        // ============================================
-        // 4. REMOVE MEMBER
+        // 3. REMOVE MEMBER
         // ============================================
         removeMember: builder.mutation({
             query: ({ orgId, memberId }) => ({
@@ -46,7 +35,7 @@ export const memberApi = baseApi.injectEndpoints({
         }),
 
         // ============================================
-        // 5. UPDATE MEMBER ROLE
+        // 4. UPDATE MEMBER ROLE
         // ============================================
         updateMemberRole: builder.mutation({
             query: ({ orgId, memberId, role }) => ({
@@ -57,9 +46,35 @@ export const memberApi = baseApi.injectEndpoints({
             invalidatesTags: ['Member'],
         }),
 
+        // ============================================
+        // 5. ACCEPT INVITE
+        // ============================================
+        acceptInvite: builder.mutation({
+            query: ({ token, userId }) => ({
+                url: `/accept-invite/${token}`,
+                method: 'POST',
+                body: { userId },
+            }),
+        }),
+
+        // ============================================
+        // 6. GET PENDING INVITES
+        // ============================================
         getPendingInvites: builder.query({
             query: (orgId) => `/${orgId}/invites/pending`,
             providesTags: ['Invite'],
+        }),
+
+        // ============================================
+        // 7. RESEND INVITE ✅ NEW
+        // ============================================
+        resendInvite: builder.mutation({
+            query: ({ orgId, email }) => ({
+                url: `/${orgId}/invites/resend`,
+                method: 'POST',
+                body: { email },
+            }),
+            invalidatesTags: ['Invite'],
         }),
     }),
 });
@@ -67,8 +82,9 @@ export const memberApi = baseApi.injectEndpoints({
 export const {
     useGetMembersQuery,
     useInviteMemberMutation,
-    useAcceptInviteMutation,
     useRemoveMemberMutation,
     useUpdateMemberRoleMutation,
-    useGetPendingInvitesQuery,  // ✅ NEW
+    useAcceptInviteMutation,
+    useGetPendingInvitesQuery,
+    useResendInviteMutation,  // ✅ NEW
 } = memberApi;
