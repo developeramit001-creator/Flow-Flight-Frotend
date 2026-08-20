@@ -6,74 +6,48 @@ import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
     CheckCircle, XCircle, Loader2, Building2, User, Mail,
-    Clock, Calendar, Shield, ArrowRight, Sparkles
+    Clock, Calendar, Shield, ArrowRight, Sparkles, AlertCircle,
+    Moon, Sun
 } from 'lucide-react';
-import { useAcceptInviteMutation } from '@/store/api/memberApi';
-import { useGetCurrentUserQuery } from '@/store/api/authApi';
+import { useAcceptInviteMutation, useGetInviteDetailsQuery } from '@/store/api/memberApi';
 import { useSelector } from 'react-redux';
+import { useTheme } from '@/providers/ThemeProvider';
 import toast from 'react-hot-toast';
 
 export default function AcceptInvitePage() {
     const router = useRouter();
     const params = useParams();
     const token = params.token;
+    const { theme, toggleTheme } = useTheme();
 
     // ✅ RTK Query hooks
     const [acceptInvite, { isLoading: isAccepting }] = useAcceptInviteMutation();
-    const { data: userData, isLoading: isUserLoading } = useGetCurrentUserQuery(undefined, {
-        skip: typeof window === 'undefined',
-    });
     const user = useSelector((state) => state.auth.user);
 
+    // ✅ Get invite details using RTK Query
+    const {
+        data: inviteResponse,
+        isLoading: isInviteLoading,
+        error: inviteError,
+    } = useGetInviteDetailsQuery(token, {
+        skip: !token,
+    });
+
     // ✅ State
-    const [isLoading, setIsLoading] = useState(true);
-    const [inviteData, setInviteData] = useState(null);
-    const [error, setError] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    // ✅ Verify invite token and get details
+    // Check if user is logged in
     useEffect(() => {
-        const verifyInvite = async () => {
-            try {
-                setIsLoading(true);
+        const token = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('accessToken='))
+            ?.split('=')[1];
+        setIsLoggedIn(!!token);
+    }, []);
 
-                // ✅ Check if user is logged in
-                const token = document.cookie
-                    .split('; ')
-                    .find(row => row.startsWith('accessToken='))
-                    ?.split('=')[1];
-
-                setIsLoggedIn(!!token);
-
-                // ✅ Fetch invite details from backend
-                const response = await fetch(`/api/invite/${token}`, {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    setInviteData(data.data);
-                    setError(null);
-                } else {
-                    setError(data.message || 'Invalid or expired invite link.');
-                }
-            } catch (error) {
-                console.error('Verify invite error:', error);
-                setError('Failed to verify invite. Please try again.');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        if (token) {
-            verifyInvite();
-        }
-    }, [token]);
+    // ✅ Data from RTK Query
+    const inviteData = inviteResponse?.data;
+    const error = inviteError?.data?.message || inviteError?.message || null;
 
     // ✅ Handle accept invite
     const handleAcceptInvite = async () => {
@@ -103,20 +77,34 @@ export default function AcceptInvitePage() {
 
     // ✅ Handle login redirect
     const handleLoginRedirect = () => {
-        router.push(`/login?redirect=/invite/${token}`);
+        const email = inviteData?.email || '';
+        router.push(`/login?redirect=/invite/${token}&email=${encodeURIComponent(email)}`);
     };
 
     // ✅ Handle signup redirect
     const handleSignupRedirect = () => {
-        router.push(`/signup?redirect=/invite/${token}`);
+        const email = inviteData?.email || '';
+        const org = inviteData?.organization || '';
+        router.push(`/signup?redirect=/invite/${token}&email=${encodeURIComponent(email)}&org=${encodeURIComponent(org)}`);
     };
 
     // ============================================
     // RENDER - LOADING
     // ============================================
-    if (isLoading || isUserLoading) {
+    if (isInviteLoading) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
+            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 relative">
+                <button
+                    onClick={toggleTheme}
+                    className="absolute top-4 right-4 z-50 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+                    aria-label="Toggle theme"
+                >
+                    {theme === 'dark' ? (
+                        <Sun className="h-5 w-5 text-yellow-400" />
+                    ) : (
+                        <Moon className="h-5 w-5 text-gray-600" />
+                    )}
+                </button>
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -144,7 +132,18 @@ export default function AcceptInvitePage() {
     // ============================================
     if (error) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 p-4">
+            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 p-4 relative">
+                <button
+                    onClick={toggleTheme}
+                    className="absolute top-4 right-4 z-50 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+                    aria-label="Toggle theme"
+                >
+                    {theme === 'dark' ? (
+                        <Sun className="h-5 w-5 text-yellow-400" />
+                    ) : (
+                        <Moon className="h-5 w-5 text-gray-600" />
+                    )}
+                </button>
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -182,7 +181,20 @@ export default function AcceptInvitePage() {
     // RENDER - MAIN
     // ============================================
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 p-4">
+        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 p-4 relative">
+            {/* ✅ Dark Mode Toggle - Top Right */}
+            <button
+                onClick={toggleTheme}
+                className="absolute top-4 right-4 z-50 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+                aria-label="Toggle theme"
+            >
+                {theme === 'dark' ? (
+                    <Sun className="h-5 w-5 text-yellow-400" />
+                ) : (
+                    <Moon className="h-5 w-5 text-gray-600" />
+                )}
+            </button>
+
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -305,7 +317,6 @@ export default function AcceptInvitePage() {
 
                 {/* Actions */}
                 {isLoggedIn && user ? (
-                    // ✅ Logged in → Show Accept Button
                     <button
                         onClick={handleAcceptInvite}
                         disabled={isAccepting}
@@ -321,7 +332,6 @@ export default function AcceptInvitePage() {
                         )}
                     </button>
                 ) : (
-                    // ❌ Not logged in → Show Login/Signup Buttons
                     <div className="mt-6 space-y-3">
                         <button
                             onClick={handleLoginRedirect}

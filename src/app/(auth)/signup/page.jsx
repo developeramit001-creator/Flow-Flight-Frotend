@@ -1,8 +1,8 @@
 // src/app/(auth)/signup/page.jsx
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
     Mail, Lock, User, Building2, Loader2, Eye, EyeOff,
@@ -15,6 +15,7 @@ import toast from 'react-hot-toast';
 
 export default function SignupPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { theme, toggleTheme } = useTheme();
     const [register, { isLoading }] = useRegisterMutation();
     const [showPassword, setShowPassword] = useState(false);
@@ -27,6 +28,19 @@ export default function SignupPage() {
     });
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
+
+    // ✅ Pre-fill email and org from URL (invite flow)
+    useEffect(() => {
+        const email = searchParams.get('email');
+        const org = searchParams.get('org');
+
+        if (email) {
+            setFormData(prev => ({ ...prev, email }));
+        }
+        if (org) {
+            setFormData(prev => ({ ...prev, orgName: org }));
+        }
+    }, [searchParams]);
 
     const validateField = (field, value) => {
         switch (field) {
@@ -118,9 +132,13 @@ export default function SignupPage() {
                 localStorage.setItem('registerEmail', formData.email);
                 resetForm();
 
-                setTimeout(() => {
+                // ✅ Check if redirect parameter exists (invite flow)
+                const redirect = searchParams.get('redirect');
+                if (redirect) {
+                    router.push(redirect);
+                } else {
                     router.push('/login');
-                }, 2000);
+                }
             }
         } catch (error) {
             const message = error?.data?.message || 'Registration failed. Please try again.';

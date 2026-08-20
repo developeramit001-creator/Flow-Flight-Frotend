@@ -1,4 +1,4 @@
-// src/components/layout/Sidebar.tsx
+// src/components/layout/Sidebar.jsx
 'use client';
 
 import Link from 'next/link';
@@ -14,10 +14,11 @@ import {
     MessageCircle,
     Workflow,
     LogOut,
+    Mail,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-function cn(...classes: (string | boolean | undefined)[]) {
+function cn(...classes) {
     return classes.filter(Boolean).join(' ');
 }
 
@@ -27,6 +28,7 @@ const navItems = [
     { name: 'Workflows', href: '/dashboard/workflows', icon: Workflow },
     { name: 'Tasks', href: '/dashboard/tasks', icon: CheckSquare },
     { name: 'Team', href: '/dashboard/team', icon: Users },
+    { name: 'Invitations', href: '/dashboard/invitations', icon: Mail }, // ✅ ADDED
     { name: 'Clients', href: '/dashboard/clients', icon: Briefcase },
     { name: 'Resources', href: '/dashboard/resources', icon: Library },
     { name: 'Chat', href: '/dashboard/chat', icon: MessageCircle },
@@ -79,6 +81,11 @@ export function Sidebar() {
                             )}
                             {item.name === 'Chat' && (
                                 <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-md">
+                                    3
+                                </span>
+                            )}
+                            {item.name === 'Invitations' && (
+                                <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white shadow-md">
                                     3
                                 </span>
                             )}

@@ -1,8 +1,8 @@
 // src/app/(auth)/login/page.jsx
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, Lock, Loader2, Eye, EyeOff, Sparkles, AlertCircle, Moon, Sun } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 
 export default function LoginPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { theme, toggleTheme } = useTheme();
     const [login, { isLoading }] = useLoginMutation();
     const [resend, { isLoading: isResending }] = useResendVerificationMutation();
@@ -23,6 +24,14 @@ export default function LoginPage() {
     const [errors, setErrors] = useState({});
     const [showResend, setShowResend] = useState(false);
     const [resendEmail, setResendEmail] = useState('');
+
+    // ✅ Pre-fill email from URL (invite flow)
+    useEffect(() => {
+        const email = searchParams.get('email');
+        if (email) {
+            setFormData(prev => ({ ...prev, email }));
+        }
+    }, [searchParams]);
 
     const validate = () => {
         const newErrors = {};
@@ -45,8 +54,14 @@ export default function LoginPage() {
                     icon: '👋',
                     duration: 3000,
                 });
-                console.log('Redirecting to dashboard...');
-                router.push('/dashboard');
+
+                // ✅ Check if redirect parameter exists (invite flow)
+                const redirect = searchParams.get('redirect');
+                if (redirect) {
+                    router.push(redirect);
+                } else {
+                    router.push('/dashboard');
+                }
             }
         } catch (error) {
             const message = error?.data?.message || 'Invalid credentials. Please try again.';
@@ -97,7 +112,7 @@ export default function LoginPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="w-full max-w-md rounded-2xl glass p-8 border border-white/20 dark:border-gray-800/50 shadow-2xl"
+                className="w-full max-w-md rounded-2xl glass p-8 border border-white/20 dark:border-gray-800/50 shadow-2xl relative"
             >
                 {/* Dark Mode Toggle - Top Right */}
                 <div className="absolute top-4 right-4">

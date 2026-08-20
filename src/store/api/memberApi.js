@@ -58,7 +58,7 @@ export const memberApi = baseApi.injectEndpoints({
         }),
 
         // ============================================
-        // 6. GET PENDING INVITES
+        // 6. GET PENDING INVITES (Organization)
         // ============================================
         getPendingInvites: builder.query({
             query: (orgId) => `/${orgId}/invites/pending`,
@@ -66,7 +66,7 @@ export const memberApi = baseApi.injectEndpoints({
         }),
 
         // ============================================
-        // 7. RESEND INVITE ✅ NEW
+        // 7. RESEND INVITE
         // ============================================
         resendInvite: builder.mutation({
             query: ({ orgId, email }) => ({
@@ -76,9 +76,41 @@ export const memberApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ['Invite'],
         }),
+
+        // ============================================
+        // 8. GET INVITE DETAILS (Public)
+        // ============================================
+        getInviteDetails: builder.query({
+            query: (token) => `/invite/${token}`,
+            providesTags: ['Invite'],
+        }),
+
+        // ============================================
+        // 9. GET MY INVITES (Dashboard) ✅ NEW
+        // ============================================
+        getMyInvites: builder.query({
+            query: () => '/my/invites',
+            providesTags: ['Invite'],
+        }),
+
+        // ============================================
+        // 10. REJECT INVITE ✅ NEW
+        // ============================================
+        rejectInvite: builder.mutation({
+            query: (inviteId) => ({
+                url: `/invites/${inviteId}/reject`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Invite'],
+        }),
+        getMyOrganizations: builder.query({
+            query: () => '/my/organizations',
+            providesTags: ['Organization'],
+        }),
     }),
 });
 
+// ✅ Auto-generated hooks
 export const {
     useGetMembersQuery,
     useInviteMemberMutation,
@@ -86,5 +118,8 @@ export const {
     useUpdateMemberRoleMutation,
     useAcceptInviteMutation,
     useGetPendingInvitesQuery,
-    useResendInviteMutation,  // ✅ NEW
+    useResendInviteMutation,
+    useGetInviteDetailsQuery,
+    useGetMyInvitesQuery,    // ✅ NEW
+    useRejectInviteMutation, // ✅ NEW
 } = memberApi;
