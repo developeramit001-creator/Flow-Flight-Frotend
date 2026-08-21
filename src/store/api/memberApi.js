@@ -104,11 +104,12 @@ export const memberApi = baseApi.injectEndpoints({
             invalidatesTags: ['Invite'],
         }),
         getMyOrganizations: builder.query({
-            query: () => '/my/organizations',
+            query: () => '/organizations/my/organizations',
             providesTags: ['Organization'],
         }),
     }),
 });
+// api/organizations/my/organizations
 
 // ✅ Auto-generated hooks
 export const {
@@ -122,4 +123,5 @@ export const {
     useGetInviteDetailsQuery,
     useGetMyInvitesQuery,    // ✅ NEW
     useRejectInviteMutation, // ✅ NEW
+    useGetMyOrganizationsQuery
 } = memberApi;

@@ -15,6 +15,7 @@ import {
     Workflow,
     LogOut,
     Mail,
+    Building2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -28,11 +29,13 @@ const navItems = [
     { name: 'Workflows', href: '/dashboard/workflows', icon: Workflow },
     { name: 'Tasks', href: '/dashboard/tasks', icon: CheckSquare },
     { name: 'Team', href: '/dashboard/team', icon: Users },
+    { name: 'My Orgs', href: '/dashboard/my-organizations', icon: Building2 }, // ✅ ADD
     { name: 'Invitations', href: '/dashboard/invitations', icon: Mail }, // ✅ ADDED
     { name: 'Clients', href: '/dashboard/clients', icon: Briefcase },
     { name: 'Resources', href: '/dashboard/resources', icon: Library },
     { name: 'Chat', href: '/dashboard/chat', icon: MessageCircle },
     { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+
 ];
 
 export function Sidebar() {
