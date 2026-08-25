@@ -53,3 +53,29 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-500 dark:bg-gray-500;
 }
+
+/* ✅ NEW - Field Styles (for Project Settings Page) */
+@layer components {
+  .field-label {
+    @apply block mb-2 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400;
+  }
+
+  .field-input {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white outline-none transition-all duration-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10;
+  }
+}
+
+/* ✅ SHIMMER ANIMATION (for loading states) */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s ease-in-out infinite;
+  background-size: 200% 100%;
+}
