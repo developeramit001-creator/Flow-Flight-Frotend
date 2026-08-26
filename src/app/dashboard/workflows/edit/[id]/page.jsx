@@ -362,7 +362,8 @@ export default function EditWorkflowPage({ params }) {
     // ============================================
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-28">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+            {/* ✅ FIX: max-w-4xl → max-w-6xl */}
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
                 {/* ===== HEADER ===== */}
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
@@ -510,7 +511,7 @@ export default function EditWorkflowPage({ params }) {
 
             {/* ===== STICKY SAVE BAR ===== */}
             <div className="fixed bottom-0 left-0 right-0 z-40 px-4 py-3 bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl border-t border-gray-200 dark:border-gray-800">
-                <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                             <Target className="w-4 h-4 text-gray-500" />
