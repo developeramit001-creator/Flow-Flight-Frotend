@@ -2,7 +2,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Zap, Crown } from 'lucide-react';
+import { Zap, Crown, User, Users, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const QuickAssign = ({ steps, members, user, setAssignedTo }) => {
@@ -32,47 +32,76 @@ const QuickAssign = ({ steps, members, user, setAssignedTo }) => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-4 sm:p-5 text-white shadow-lg shadow-indigo-500/30"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow duration-300"
         >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                {/* Left Side - Title */}
-                <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-white/20 rounded-lg">
-                        <Zap className="w-4 h-4" />
-                    </div>
-                    <div>
-                        <span className="font-semibold text-sm">Quick Assign</span>
-                        <p className="text-[10px] text-indigo-200">All steps to one person</p>
-                    </div>
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 flex items-center justify-center">
+                    <Zap className="w-4.5 h-4.5 text-indigo-600 dark:text-indigo-400" />
+                </div>
+                <div>
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white">Quick Assign</h3>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                        Assign all {steps.length} steps to one person instantly
+                    </p>
+                </div>
+            </div>
+
+            {/* Content */}
+            <div className="space-y-3">
+                {/* Info Message */}
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-xs text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-gray-700">
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
+                    <span>Click below to assign all steps at once</span>
                 </div>
 
-                {/* Right Side - Buttons */}
-                <div className="flex flex-wrap gap-1.5">
+                {/* Buttons */}
+                <div className="flex flex-wrap gap-2">
                     {/* Assign to Myself */}
-                    <button
+                    <motion.button
+                        whileHover={{ scale: 1.03, y: -1 }}
+                        whileTap={{ scale: 0.96 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                         onClick={handleAssignToMe}
-                        className="px-3 py-1.5 rounded-lg bg-white text-indigo-700 text-xs font-bold hover:scale-105 hover:shadow-lg transition-all duration-200"
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-200"
                     >
-                        <Crown className="w-3 h-3 inline mr-1" /> Myself
-                    </button>
+                        <Crown className="w-4 h-4" />
+                        Assign to Me
+                    </motion.button>
 
-                    {/* Assign to Team Members (max 3) */}
-                    {members.slice(0, 3).map((member) => (
-                        <button
+                    {/* Assign to Team Members */}
+                    {members.slice(0, 3).map((member, index) => (
+                        <motion.button
                             key={member.id}
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            whileHover={{ scale: 1.03, y: -1 }}
+                            whileTap={{ scale: 0.96 }}
+                            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                             onClick={() => handleAssignToMember(member.id, member.name)}
-                            className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-white text-xs font-medium hover:bg-white/20 hover:scale-105 transition-all duration-200"
+                            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md transition-all duration-200"
                         >
+                            <User className="w-4 h-4 text-gray-400" />
                             {member.name}
-                        </button>
+                        </motion.button>
                     ))}
 
-                    {/* More members indicator */}
+                    {/* More Members Indicator */}
                     {members.length > 3 && (
-                        <span className="px-2 py-1.5 text-xs text-indigo-200 flex items-center">
+                        <div className="flex items-center px-3 py-2.5 text-sm text-gray-400 dark:text-gray-500 border border-dashed border-gray-300 dark:border-gray-600 rounded-xl">
+                            <Users className="w-4 h-4 mr-1.5" />
                             +{members.length - 3} more
-                        </span>
+                        </div>
                     )}
+                </div>
+
+                {/* Result Preview */}
+                <div className="flex items-center gap-2 mt-1 px-3 py-2 rounded-lg bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-800/30">
+                    <div className="flex items-center gap-1 text-[10px] text-indigo-600 dark:text-indigo-400">
+                        <Zap className="w-3 h-3" />
+                        <span>Quick assign will assign <strong>all {steps.length} steps</strong> to selected member</span>
+                    </div>
                 </div>
             </div>
         </motion.section>

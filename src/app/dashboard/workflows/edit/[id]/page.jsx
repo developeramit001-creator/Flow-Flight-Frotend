@@ -38,7 +38,7 @@ import QuickAssign from './components/QuickAssign';
 import WorkflowSteps from './components/WorkflowSteps';
 import ProjectSummary from './components/ProjectSummary';
 import AssignmentModal from './components/AssignmentModal';
-
+import TeamAndAssign from './components/TeamAndAssign';
 // ============================================
 // MAIN COMPONENT
 // ============================================
@@ -451,27 +451,23 @@ export default function EditWorkflowPage({ params }) {
                     />
 
                     {/* Section 4: Team Overview */}
-                    <TeamOverview
+
+
+                    {/* Section 5: Quick Assign */}
+
+
+                    <TeamAndAssign
                         assignedTo={assignedTo}
                         steps={steps}
                         projectHead={projectHead}
-                        members={members}
                         user={user}
                         assignedCount={assignedCount}
                         isFullyAssigned={isFullyAssigned()}
                         isProjectHeadSet={isProjectHeadSet()}
                         getUserName={getUserName}
+                        members={members}
+                        setAssignedTo={setAssignedTo}
                     />
-
-                    {/* Section 5: Quick Assign */}
-                    {members.length > 0 && steps.length > 0 && (
-                        <QuickAssign
-                            steps={steps}
-                            members={members}
-                            user={user}
-                            setAssignedTo={setAssignedTo}
-                        />
-                    )}
 
                     {/* Section 6: Workflow Steps */}
                     <WorkflowSteps
