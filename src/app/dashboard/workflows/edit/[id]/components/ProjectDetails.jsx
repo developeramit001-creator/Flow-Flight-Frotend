@@ -278,6 +278,12 @@ const ProjectDetails = ({
     projectDescription,
     setProjectDescription,
 
+    projectClient,
+    setProjectClient,
+
+    projectGoal,
+    setProjectGoal,
+
     projectStatus,
     setProjectStatus,
 
@@ -397,7 +403,7 @@ const ProjectDetails = ({
 
             <div className="space-y-4">
                 {/* ====================================
-                    PROJECT NAME + CATEGORY
+                    PROJECT NAME + CLIENT
                 ==================================== */}
 
                 <div
@@ -424,39 +430,50 @@ const ProjectDetails = ({
                         placeholder="e.g. Website Redesign"
                     />
 
-                    {/* Category */}
+                    {/* Client */}
 
                     <AnimatedInput
-                        label="Category"
-                        value={
-                            projectCategory
-                        }
+                        label="Client"
+                        value={projectClient}
                         onChange={(e) =>
-                            setProjectCategory(
-                                e.target.value
-                            )
+                            setProjectClient(e.target.value)
                         }
-                        placeholder="e.g. Design, Development"
+                        placeholder="e.g. Acme Inc."
                     />
                 </div>
 
                 {/* ====================================
-                    DESCRIPTION
+                    DESCRIPTION + GOAL
                 ==================================== */}
 
-                <AnimatedTextarea
-                    label="Description"
-                    value={
-                        projectDescription
-                    }
-                    onChange={(e) =>
-                        setProjectDescription(
-                            e.target.value
-                        )
-                    }
-                    placeholder="Describe your project in detail..."
-                    rows={3}
-                />
+                <div
+                    className="
+                        grid
+                        grid-cols-1
+                        lg:grid-cols-2
+                        gap-4
+                    "
+                >
+                    <AnimatedTextarea
+                        label="Description"
+                        value={projectDescription}
+                        onChange={(e) =>
+                            setProjectDescription(e.target.value)
+                        }
+                        placeholder="Describe the project, scope, and important context..."
+                        rows={4}
+                    />
+
+                    <AnimatedTextarea
+                        label="Project Goal"
+                        value={projectGoal}
+                        onChange={(e) =>
+                            setProjectGoal(e.target.value)
+                        }
+                        placeholder="What should this project achieve? e.g. Launch a modern website that increases qualified leads."
+                        rows={4}
+                    />
+                </div>
 
                 {/* ====================================
                     STATUS + PRIORITY + TAGS

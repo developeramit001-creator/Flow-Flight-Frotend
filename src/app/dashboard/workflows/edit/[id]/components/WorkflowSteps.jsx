@@ -21,6 +21,8 @@ const WorkflowSteps = ({
     onOpenAssignModal,
     getUserName,
     totalDays,
+    projectStartDate,
+    projectEndDate,
 }) => {
     return (
         <motion.section
@@ -58,6 +60,7 @@ const WorkflowSteps = ({
 
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
+
                     {/* Icon */}
 
                     <motion.div
@@ -381,6 +384,12 @@ const WorkflowSteps = ({
                                                     index ===
                                                     steps.length -
                                                     1
+                                                }
+                                                projectStartDate={
+                                                    projectStartDate
+                                                }
+                                                projectEndDate={
+                                                    projectEndDate
                                                 }
                                             />
                                         </motion.div>

@@ -1,8 +1,7 @@
-// src/app/dashboard/workflows/edit/[id]/components/ProjectHeadTimeline.jsx
-
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import {
     Crown,
@@ -27,15 +26,147 @@ const ProjectHeadTimeline = ({
     user,
     getUserName,
 }) => {
+    console.log(
+        projectTimeline,
+        'projectTimeline'
+    );
+
+    const [
+        timelineEndError,
+        setTimelineEndError,
+    ] = useState('');
+
     // ============================================
     // PROJECT HEAD OPTIONS
     // ============================================
 
-    const headOptions = members.map((member) => ({
-        value: member.id,
-        label: `${member.name}${member.id === user?.id ? ' (You)' : ''}`,
-        icon: '👤',
-    }));
+    const headOptions = members.map(
+        (member) => ({
+            value: member.id,
+            label: `${member.name}${member.id === user?.id
+                ? ' (You)'
+                : ''
+                }`,
+            icon: '👤',
+        })
+    );
+
+    // ============================================
+    // TODAY'S DATE FOR MIN DATE
+    // ============================================
+
+    const today =
+        new Date()
+            .toISOString()
+            .split('T')[0];
+
+    // ============================================
+    // DATE HELPERS
+    // ============================================
+
+    const getDateDifference = (
+        startDate,
+        endDate
+    ) => {
+        if (!startDate || !endDate)
+            return 0;
+
+        const start = new Date(
+            `${startDate}T00:00:00`
+        );
+
+        const end = new Date(
+            `${endDate}T00:00:00`
+        );
+
+        return Math.ceil(
+            (end - start) /
+            (1000 * 60 * 60 * 24)
+        );
+    };
+
+    // ============================================
+    // START DATE CHANGE
+    // ============================================
+
+    const handleStartDateChange = (
+        value
+    ) => {
+        if (!value) {
+            setProjectTimeline({
+                ...projectTimeline,
+                start: '',
+            });
+
+            setTimelineEndError('');
+
+            return;
+        }
+
+        // ----------------------------------------
+        // Existing project end cannot be before
+        // the newly selected start.
+        // ----------------------------------------
+
+        if (
+            projectTimeline.end &&
+            value > projectTimeline.end
+        ) {
+            setTimelineEndError(
+                `Start date cannot be after the project end date (${projectTimeline.end}). Please choose a start date on or before the project end date.`
+            );
+
+            return;
+        }
+
+        setProjectTimeline({
+            ...projectTimeline,
+            start: value,
+        });
+
+        setTimelineEndError('');
+    };
+
+    // ============================================
+    // END DATE CHANGE
+    // ============================================
+
+    const handleEndDateChange = (
+        value
+    ) => {
+        if (!value) {
+            setProjectTimeline({
+                ...projectTimeline,
+                end: '',
+            });
+
+            setTimelineEndError('');
+
+            return;
+        }
+
+        // ----------------------------------------
+        // End cannot be before start
+        // ----------------------------------------
+
+        if (
+            projectTimeline.start &&
+            value < projectTimeline.start
+        ) {
+            setTimelineEndError(
+                `End date cannot be before the project start date (${projectTimeline.start}). Please choose an end date on or after the project start date.`
+            );
+
+            return;
+        }
+
+        setProjectTimeline({
+            ...projectTimeline,
+            end: value,
+        });
+
+        setTimelineEndError('');
+    };
 
     // ============================================
     // RENDER
@@ -308,7 +439,7 @@ const ProjectHeadTimeline = ({
                     "
                 >
                     {/* ====================================
-                        START DATE
+                        START DATE - Past dates disabled
                     ==================================== */}
 
                     <CustomDatePicker
@@ -316,32 +447,74 @@ const ProjectHeadTimeline = ({
                         value={
                             projectTimeline.start
                         }
-                        onChange={(value) =>
-                            setProjectTimeline({
-                                ...projectTimeline,
-                                start: value,
-                            })
+                        onChange={
+                            handleStartDateChange
                         }
                         placeholder="Select start date"
+                        minDate={today}
+                        maxDate={
+                            projectTimeline.end ||
+                            undefined
+                        }
                     />
 
                     {/* ====================================
-                        END DATE
+                        END DATE - Past dates disabled,
+                        min = start date or today
                     ==================================== */}
 
-                    <CustomDatePicker
-                        label="Expected End Date"
-                        value={
-                            projectTimeline.end
-                        }
-                        onChange={(value) =>
-                            setProjectTimeline({
-                                ...projectTimeline,
-                                end: value,
-                            })
-                        }
-                        placeholder="Select end date"
-                    />
+                    <div>
+                        <CustomDatePicker
+                            label="Expected End Date"
+                            value={
+                                projectTimeline.end
+                            }
+                            onChange={
+                                handleEndDateChange
+                            }
+                            placeholder="Select end date"
+                            minDate={
+                                projectTimeline.start ||
+                                today
+                            }
+                        />
+
+                        <AnimatePresence
+                            initial={false}
+                        >
+                            {timelineEndError && (
+                                <motion.p
+                                    initial={{
+                                        opacity: 0,
+                                        y: -4,
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                        y: 0,
+                                    }}
+                                    exit={{
+                                        opacity: 0,
+                                        y: -4,
+                                    }}
+                                    className="
+                                        flex
+                                        items-center
+                                        gap-1
+                                        mt-1.5
+                                        text-[10px]
+                                        font-medium
+                                        text-red-500
+                                    "
+                                >
+                                    <span className="w-1 h-1 rounded-full bg-red-500" />
+
+                                    {
+                                        timelineEndError
+                                    }
+                                </motion.p>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </div>
 
                 {/* ========================================
@@ -425,22 +598,10 @@ const ProjectHeadTimeline = ({
                                             whitespace-nowrap
                                         "
                                         >
-                                            {Math.ceil(
-                                                (
-                                                    new Date(
-                                                        projectTimeline.end
-                                                    ) -
-                                                    new Date(
-                                                        projectTimeline.start
-                                                    )
-                                                ) /
-                                                (
-                                                    1000 *
-                                                    60 *
-                                                    60 *
-                                                    24
-                                                )
-                                            )}{' '}
+                                            {getDateDifference(
+                                                projectTimeline.start,
+                                                projectTimeline.end
+                                            ) + 1}{' '}
                                             days
                                         </span>
                                     )}
